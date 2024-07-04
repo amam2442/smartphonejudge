@@ -6,14 +6,14 @@ const shuttleImage = document.getElementById('shuttleImage');
 
 let shuttleDetected = false;
 let shuttleYPosition = 0;
-const groundThreshold = 440; // 床の位置の閾値（適宜調整）
+const groundThreshold = 380; // 床の位置の閾値（適宜調整）
 
 // Webカメラの映像を取得
 navigator.mediaDevices.getUserMedia({
   video: {
     facingMode: 'environment', // スマホの後ろのカメラを使用
-    width: { ideal: 640 },
-    height: { ideal: 480 }
+    width: { ideal: 250 },
+    height: { ideal: 400 }
   }
 })
   .then((stream) => {
@@ -38,7 +38,7 @@ function detectShuttle(context, width, height) {
     const y = Math.floor((i / 4) / width); // ピクセルのY座標
 
     // 青色のピクセルを検出
-    if (r > 150 && g < 100 && b < 100) {
+    if (b > 150 && r < 80 && g < 80) {
       detected = true;
       yPositionSum += y;
       bluePixelCount++;
@@ -62,6 +62,9 @@ function processFrame() {
       message.textContent = "シャトルが床に着地しました！";
       const imageDataURL = canvas.toDataURL();
       shuttleImage.src = imageDataURL;
+      shuttleImage.width = 250;
+      shuttleImage.height = 400;
+
       shuttleImage.style.display = 'block';
     } else {
       message.textContent = "シャトルが見つかりました！";
