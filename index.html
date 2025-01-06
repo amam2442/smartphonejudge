@@ -4,17 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>シャトル検出</title>
+  <title>カメラ映像をCanvasに描画</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
 </head>
 
 <body>
-  <video id="video" width="250" height="400" autoplay></video>
-  <canvas id="canvas" width="250" height="400" style="display:none;"></canvas>
-  <div id="message"></div>
-  <div>
-    <p>シャトルが床に着した瞬間:</p>
-    <img id="shuttleImage" style="display:none;" />
-  </div>
+  <h1>カメラ映像をCanvasに描画</h1>
+  <canvas id="myCanvas" width="640" height="480"></canvas>
   <script src="main.js"></script>
 </body>
 
