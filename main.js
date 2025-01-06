@@ -1,20 +1,23 @@
-const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let isRecording = false;
 let recorder;
 let recordedChunks = [];
+let videoElement = document.createElement('video');
+videoElement.width = canvas.width;
+videoElement.height = canvas.height;
 
 async function startVideo() {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  video.srcObject = stream;
+  videoElement.srcObject = stream;
+  videoElement.play();
 }
 
 function startRecording() {
   recordedChunks = [];
   const options = { mimeType: 'video/webm;codecs=vp8,opus' };
-  recorder = new MediaRecorder(video.srcObject, options);
+  recorder = new MediaRecorder(videoElement.srcObject, options);
 
   recorder.ondataavailable = event => {
     recordedChunks.push(event.data);
@@ -36,14 +39,14 @@ function stopRecording() {
 }
 
 function playRecording(url) {
-  const videoElement = document.createElement('video');
-  videoElement.src = url;
-  videoElement.play();
-  videoElement.onplay = () => {
+  const playbackElement = document.createElement('video');
+  playbackElement.src = url;
+  playbackElement.play();
+  playbackElement.onplay = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const draw = () => {
-      if (!videoElement.paused && !videoElement.ended) {
-        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      if (!playbackElement.paused && !playbackElement.ended) {
+        ctx.drawImage(playbackElement, 0, 0, canvas.width, canvas.height);
         requestAnimationFrame(draw);
       }
     };
@@ -54,7 +57,7 @@ function playRecording(url) {
 let previousFrame = null;
 
 function detectMotion() {
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
   const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
   if (previousFrame) {
