@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>カメラ映像をCanvasに描画</title>
+  <title>動きの検出と録画</title>
   <style>
     canvas {
       border: 1px solid black;
@@ -13,8 +13,10 @@
 </head>
 
 <body>
-  <h1>カメラ映像をCanvasに描画</h1>
-  <canvas id="myCanvas" width="640" height="480"></canvas>
+  <h1>カメラの映像で動きを検出</h1>
+  <video id="video" width="320" height="240" autoplay></video>
+  <canvas id="canvas" width="320" height="240"></canvas>
+
   <script src="main.js"></script>
 </body>
 
