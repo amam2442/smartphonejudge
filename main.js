@@ -1,88 +1,45 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const liveFeed = document.getElementById('liveFeed');
+const replay = document.getElementById('replay');
+const startReplayButton = document.getElementById('startReplay');
 
-let isRecording = false;
-let recorder;
-let recordedChunks = [];
-let videoElement = document.createElement('video');
-videoElement.width = canvas.width;
-videoElement.height = canvas.height;
+const mediaStreamConstraints = { video: true };
+const recordedChunks = [];
+let mediaRecorder;
 
-async function startVideo() {
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  videoElement.srcObject = stream;
-  videoElement.play();
-}
+// Initialize camera
+navigator.mediaDevices.getUserMedia(mediaStreamConstraints)
+  .then(stream => {
+    liveFeed.srcObject = stream;
 
-function startRecording() {
-  recordedChunks = [];
-  const options = { mimeType: 'video/webm;codecs=vp8,opus' };
-  recorder = new MediaRecorder(videoElement.srcObject, options);
+    // Setup MediaRecorder
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
 
-  recorder.ondataavailable = event => {
-    recordedChunks.push(event.data);
-  };
-
-  recorder.onstop = () => {
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    playRecording(url);
-  };
-
-  recorder.start();
-}
-
-function stopRecording() {
-  if (recorder && recorder.state !== 'inactive') {
-    recorder.stop();
-  }
-}
-
-function playRecording(url) {
-  const playbackElement = document.createElement('video');
-  playbackElement.src = url;
-  playbackElement.play();
-  playbackElement.onplay = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const draw = () => {
-      if (!playbackElement.paused && !playbackElement.ended) {
-        ctx.drawImage(playbackElement, 0, 0, canvas.width, canvas.height);
-        requestAnimationFrame(draw);
+    mediaRecorder.ondataavailable = event => {
+      if (event.data.size > 0) {
+        recordedChunks.push(event.data);
       }
     };
-    draw();
-  };
-}
 
-let previousFrame = null;
+    // Automatically record in chunks
+    setInterval(() => {
+      if (mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+      mediaRecorder.start();
+    }, 5000); // Record every 5 seconds
+  })
+  .catch(error => {
+    console.error('Error accessing the camera:', error);
+  });
 
-function detectMotion() {
-  ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-  const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-  if (previousFrame) {
-    const diff = compareFrames(previousFrame, currentFrame);
-    if (diff > 10000 && !isRecording) {
-      console.log('動き検出！録画開始');
-      isRecording = true;
-      startRecording();
-      setTimeout(() => {
-        stopRecording();
-        isRecording = false;
-      }, 5000); // 5秒間録画
-    }
+// Replay functionality
+startReplayButton.addEventListener('click', () => {
+  if (recordedChunks.length > 0) {
+    const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
+    replay.src = URL.createObjectURL(recordedBlob);
+    replay.style.display = 'block';
+    replay.play();
+  } else {
+    alert('No recorded video available for replay.');
   }
-
-  previousFrame = currentFrame;
-}
-
-function compareFrames(frame1, frame2) {
-  let diff = 0;
-  for (let i = 0; i < frame1.data.length; i++) {
-    diff += Math.abs(frame1.data[i] - frame2.data[i]);
-  }
-  return diff;
-}
-
-startVideo();
-setInterval(detectMotion, 100); // 100msごとに動きを検出
+});

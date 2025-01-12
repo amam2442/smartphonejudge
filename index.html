@@ -1,20 +1,36 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>動きの検出と録画</title>
+  <title>Motion Replay</title>
   <style>
-    canvas {
-      border: 1px solid black;
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    #replay {
+      display: none;
+    }
+
+    #controls {
+      margin-top: 10px;
     }
   </style>
 </head>
 
 <body>
-  <h1>カメラの映像で動きを検出</h1>
-  <canvas id="canvas" width="320" height="240"></canvas>
+  <h1>Motion Replay</h1>
+  <!-- ライブフィード用のビデオ -->
+  <video id="liveFeed" autoplay playsinline></video>
+  <!-- リプレイ用のビデオ -->
+  <video id="replay" controls></video>
+  <!-- コントロールボタン -->
+  <div id="controls">
+    <button id="startReplay">Start Replay</button>
+  </div>
 
   <script src="main.js"></script>
 </body>
