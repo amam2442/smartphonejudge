@@ -1,37 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Motion Replay</title>
+  <title>ラインジャッチyukisoejima</title>
+
   <style>
-    video {
-      max-width: 100%;
-      height: auto;
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
     }
 
-    #replay {
+    canvas {
+      border: 1px solid #ccc;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 18px;
+      color: red;
+      font-weight: bold;
+    }
+
+    video {
+      width: 320px;
+      height: auto;
+      margin: 10px 0;
+    }
+
+    #playButton {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #playButton:hover {
+      background-color: #45a049;
+    }
+
+    #replayButton {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
       display: none;
     }
 
-    #controls {
-      margin-top: 10px;
+    #replayButton:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 
 <body>
-  <h1>Motion Replay</h1>
-  <!-- ライブフィード用のビデオ -->
-  <video id="liveFeed" autoplay playsinline></video>
-  <!-- リプレイ用のビデオ -->
-  <video id="replay" controls></video>
-  <!-- コントロールボタン -->
-  <div id="controls">
-    <button id="startReplay">Start Replay</button>
-  </div>
-
+  <video id="video" playsinline muted style="display: none;"></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <video id="playback" controls style="display:none;"></video>
+  <div id="message"></div>
+  <button id="playButton">動画を再生</button>
+  <button id="replayButton">リプレイ再生</button>
   <script src="main.js"></script>
 </body>
 
